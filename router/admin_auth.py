@@ -127,3 +127,4 @@ def adminChangePassword(request: pass_reset, background_tasks: BackgroundTasks, 
     db.commit()
 
     return {"message": "Password updated succesfully"}
+

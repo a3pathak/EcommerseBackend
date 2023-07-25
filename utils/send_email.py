@@ -56,11 +56,9 @@ async def sendInvoice(invoiceNumber,email, file):
         template_body={
             "client_name" : email, "invoice_number": invoiceNumber, "sender": email
         },
-        attachments=[   
-            {
-                "file": file
-            }
-        ]
+        attachments=[{
+            "file": file
+        }]
     )
     fm = FastMail(conf)
     # background_tasks.add_task(fm.send_message, message)

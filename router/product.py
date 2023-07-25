@@ -99,3 +99,7 @@ def deleteProduct(ID: int, db: Session = Depends(get_db)):
     db.commit()
 
     return {"message": "Product has been deleted sucessfully"}
+
+@router.delete('/delete_many_products')
+def delete_many_products():
+    pass
