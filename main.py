@@ -7,7 +7,7 @@ from models import Base
 app = FastAPI()
 
 # Base.metadata.create_all(bind=engine)
-
+print('chgvhj')
 app.include_router(admin_auth.router)
 
 app.include_router(user_auth.router)
