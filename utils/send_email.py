@@ -1,10 +1,11 @@
 from fastapi_mail import FastMail, MessageSchema, ConnectionConfig, MessageType
 from anyio import Path
+from random import randint
 
 conf = ConnectionConfig(
     MAIL_FROM="ajitpathak0449@gmail.com",
     MAIL_USERNAME="ajitpathak0449",
-    MAIL_PASSWORD="jpgfstnfqpufehsk",
+    MAIL_PASSWORD="fbleuyuafdeypohg",
     MAIL_PORT=587,
     MAIL_SERVER="smtp.gmail.com",
     MAIL_STARTTLS= True,
@@ -27,7 +28,7 @@ def sendRegistrationMail(email, mobile, background_tasks):
     fm = FastMail(conf)
     background_tasks.add_task(fm.send_message, message)
 
-def sendOTPemail(otp, email, message, background_tasks):
+def sendOTPemail(otp, email, mess, background_tasks):
     message = MessageSchema(
         subject="OTP for email verification",
         recipients = [email],
@@ -51,7 +52,6 @@ async def sendInvoice(invoiceNumber,email, file):
     message = MessageSchema(
         subject=f"Invoice-{invoiceNumber} from {email}",
         recipients = [email],
-        # body = f"{mess} {otp}",
         subtype=MessageType.plain,
         template_body={
             "client_name" : email, "invoice_number": invoiceNumber, "sender": email
@@ -61,6 +61,5 @@ async def sendInvoice(invoiceNumber,email, file):
         }]
     )
     fm = FastMail(conf)
-    # background_tasks.add_task(fm.send_message, message)
     response = await fm.send_message(message, template_name = "invoice.html")
     return True

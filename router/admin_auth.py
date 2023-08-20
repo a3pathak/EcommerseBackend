@@ -5,7 +5,7 @@ from dataBase import get_db
 from schemas.auth import detail_register, pass_reset
 from utils.auth import Hasher, create_access_token
 from models import Admin, password_reset
-from utils.send_email import sendRegistrationMail, otp_generator
+from utils.send_email import sendRegistrationMail, otp_generator, sendOTPemail
 
 router = APIRouter(tags=["Admin Auth"])
 
@@ -71,60 +71,60 @@ def adminLogin(
 
     return {'message': "Login sucessfully", "access_token": access_token, "token_type": "bearer"}
 
-@router.post("/adminForget", status_code=status.HTTP_200_OK)
-def adminForgetPassword(inp: str, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
-    if "@" in inp:
-        user = db.query(Admin).filter(Admin.email == inp).first()
-    else:
-        user = db.query(Admin).filter(Admin.mobile == int(inp)).first()
+# @router.post("/adminForget", status_code=status.HTTP_200_OK)
+# def adminForgetPassword(inp: str, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
+#     if "@" in inp:
+#         user = db.query(Admin).filter(Admin.email == inp).first()
+#     else:
+#         user = db.query(Admin).filter(Admin.mobile == int(inp)).first()
 
-    if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail=f"User does not exist"
-                            )
+#     if not user:
+#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+#                             detail=f"User does not exist"
+#                             )
 
-    # Send OTP on email as well as mobile
-    otp = otp_generator()
-    mess = "Password reset"
-    sendOTPemail(otp, user.email, mess, background_tasks)
+#     # Send OTP on email as well as mobile
+#     otp = otp_generator()
+#     mess = "Password reset"
+#     sendOTPemail(otp, user.email, mess, background_tasks)
 
-    row = db.query(password_reset)\
-        .filter(password_reset.user_email_id == inp)
+#     row = db.query(password_reset)\
+#         .filter(password_reset.user_email_id == inp)
 
-    if not row.first():
-        userData = password_reset(
-            user_email_id=user.email,
-            otp=otp
-        )
-        db.add(userData)
-    else:
-        row.update({
-            password_reset.user_email_id: user.email,
-            password_reset.otp: otp
-        })
+#     if not row.first():
+#         userData = password_reset(
+#             user_email_id=user.email,
+#             otp=otp
+#         )
+#         db.add(userData)
+#     else:
+#         row.update({
+#             password_reset.user_email_id: user.email,
+#             password_reset.otp: otp
+#         })
 
-    db.commit()
+#     db.commit()
 
-    return{"message": "OTP has been sent to change password"}
+#     return{"message": "OTP has been sent to change password"}
 
-@router.put("/adminChangePass", status_code=status.HTTP_200_OK)
-def adminChangePassword(request: pass_reset, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
-    user = db.query(password_reset).filter(
-        password_reset.user_email_id == request.email)
+# @router.put("/adminChangePass", status_code=status.HTTP_200_OK)
+# def adminChangePassword(request: pass_reset, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
+#     user = db.query(password_reset).filter(
+#         password_reset.user_email_id == request.email)
 
-    if user.first().otp != request.otp:
-        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE,
-                            detail="Incorrect OTP"
-                            )
+#     if user.first().otp != request.otp:
+#         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE,
+#                             detail="Incorrect OTP"
+#                             )
 
-    mess = "Your New Password is"
-    sendConfirmInfo(request.password, request.email, mess, background_tasks)
+#     mess = "Your New Password is"
+#     sendConfirmInfo(request.password, request.email, mess, background_tasks)
 
-    users = db.query(Admin).filter(
-        Admin.email == request.email)
+#     users = db.query(Admin).filter(
+#         Admin.email == request.email)
 
-    users.update({"password": Hasher.get_password_hash(request.password)})
-    db.commit()
+#     users.update({"password": Hasher.get_password_hash(request.password)})
+#     db.commit()
 
-    return {"message": "Password updated succesfully"}
+#     return {"message": "Password updated succesfully"}
 

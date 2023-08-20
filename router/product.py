@@ -101,5 +101,8 @@ def deleteProduct(ID: int, db: Session = Depends(get_db)):
     return {"message": "Product has been deleted sucessfully"}
 
 @router.delete('/delete_many_products')
-def delete_many_products():
-    pass
+def delete_many_products(IDS: list, db: Session=Depends(get_db)):
+
+    db.query(Product).filter(Product.id.in_(IDS)).delete()
+    db.commit()
+    return {"messge": "All product has been deleted sucessfully"}

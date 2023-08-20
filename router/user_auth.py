@@ -22,7 +22,7 @@ def userRegister(
         raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, 
         detail = f"User with {request.email} is already exist")
 
-    row = db.query(User).filter(User.mobile == request.mobile)
+    row = db.query(User).filter(User.phoneNumber == request.mobile)
     if row.first():
         raise HTTPException(status_code = status.HTTP_404_NOT_FOUND, 
         detail = f"User with {request.mobile} is already exist")
@@ -32,7 +32,7 @@ def userRegister(
         "userName": request.userName,
         "password": Hasher.get_password_hash(request.password),
         "email": request.email,
-        "mobile": request.mobile
+        "phoneNumber": request.mobile
     }
 
     user = User(**data)
@@ -65,7 +65,7 @@ def userLogin(
         "userName": user.userName,
         "password": Hasher.get_password_hash(user.password),
         "email": user.email,
-        "mobile": user.mobile
+        "phoneNumber": user.phoneNumber
     }
 
     access_token = create_access_token(data, EXPIRY=60)

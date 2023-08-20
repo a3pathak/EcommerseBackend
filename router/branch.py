@@ -97,3 +97,10 @@ def deleteBranch(ID: int, db: Session = Depends(get_db)):
     db.commit()
 
     return {"message": "Branch has been deleted sucessfully"}
+
+# @router.delete("/branch/deleteMany")
+# def delete_manyBranch(IDS: list, db: Session = Depends(get_db)):
+#     db.query(Branch).filter(Branch.id.in_(IDS)).delete()
+#     db.commit()
+#     return{"message": "All branches has been deleted"}
+

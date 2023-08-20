@@ -1,5 +1,5 @@
 from email.policy import default
-from sqlalchemy import Column, Integer, String, BigInteger, Boolean
+from sqlalchemy import Column, Integer, String, BigInteger, Boolean, Float
 from sqlalchemy.ext.declarative import as_declarative, declared_attr
 from typing import Any
 from dataBase import Base as Basex
@@ -54,14 +54,7 @@ class User(Base):
     userName = Column(String(500), default = None)
     email = Column(String(500), default = None)
     phoneNumber = Column(BigInteger, default = False)
-    country = Column(String(500), default = None)    
-    state = Column(String(500), default = None)    
-    city = Column(String(500), default = None)    
-    address = Column(String(500), default = None)    
-    zipCode = Column(String(500), default = False)
-    company = Column(String(500), default = False)   
-    role = Column(String(500), default = False)   
-    isVerified = Column(Boolean, default = False)   
+    password = Column(String(30), default=None)
 
 class AddressDetail(Base):
     id = Column(Integer, index= True, primary_key = True)
@@ -90,5 +83,14 @@ class Review(Base):
     email = Column(String(500), default = None)
     rating = Column(String(500), default = None)
     product_id = Column(Integer, default = None)
+    user_id = Column(Integer, default=None)
+    branchID = Column(Integer, default=None)
+
+class OrderDetails(Base):
+    id = Column(Integer, primary_key=True, index=True)
+    product_id = Column(Integer, default=None)
+    payment_stat = Column(Boolean, default=False)
+    productName = Column(String(100), default=None)
+    amount = Column(Float, default=0.0)
     user_id = Column(Integer, default=None)
     branchID = Column(Integer, default=None)
