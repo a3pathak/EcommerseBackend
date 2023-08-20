@@ -44,7 +44,8 @@ def update_order(ID: int, request: Order_Details , db: Session = Depends(get_db)
     if not check.first():
         raise HTTPException(status_code = status.HTTP400, details="There is not order avilable with this id")
     else:
-        check.update(**request)
+        item = dict(request)
+        check.update(item)
         db.commit()
 
     return {"message": "Order has been updated sucecssfully"}

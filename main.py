@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from dataBase import engine
-from router import branch, admin_auth, product, user, user_auth, uploadfile, address, addToCart, review, order
+from router import branch, admin_auth, product, user_auth, uploadfile, address, addToCart, review, order
 from models import Base
 
 app = FastAPI()
@@ -14,7 +14,7 @@ app.include_router(order.router)
 
 app.include_router(user_auth.router)
 
-app.include_router(user.router)
+# app.include_router(user.router)
 
 app.include_router(address.router)
 

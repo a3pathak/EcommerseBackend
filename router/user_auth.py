@@ -72,60 +72,60 @@ def userLogin(
 
     return {'message': "Login sucessfully", "access_token": access_token, "token_type": "bearer"}
 
-@router.post("/forget", status_code=status.HTTP_200_OK)
-def userForgetPassword(inp: str, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
-    if "@" in inp:
-        user = db.query(User).filter(User.email == inp).first()
-    else:
-        user = db.query(User).filter(User.mobile == int(inp)).first()
+# @router.post("/forget", status_code=status.HTTP_200_OK)
+# def userForgetPassword(inp: str, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
+#     if "@" in inp:
+#         user = db.query(User).filter(User.email == inp).first()
+#     else:
+#         user = db.query(User).filter(User.mobile == int(inp)).first()
 
-    if not user:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail=f"User does not exist"
-                            )
+#     if not user:
+#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+#                             detail=f"User does not exist"
+#                             )
 
-    # Send OTP on email as well as mobile
-    otp = otp_generator()
-    mess = "Password reset"
-    sendOTPemail(otp, user.email, mess, background_tasks)
+#     # Send OTP on email as well as mobile
+#     otp = otp_generator()
+#     mess = "Password reset"
+#     sendOTPemail(otp, user.email, mess, background_tasks)
 
-    row = db.query(password_reset)\
-        .filter(password_reset.user_email_id == inp)
+#     row = db.query(password_reset)\
+#         .filter(password_reset.user_email_id == inp)
 
-    if not row.first():
-        userData = password_reset(
-            user_email_id=user.email,
-            otp=otp
-        )
-        db.add(userData)
-    else:
-        row.update({
-            password_reset.user_email_id: user.email,
-            password_reset.otp: otp
-        })
+#     if not row.first():
+#         userData = password_reset(
+#             user_email_id=user.email,
+#             otp=otp
+#         )
+#         db.add(userData)
+#     else:
+#         row.update({
+#             password_reset.user_email_id: user.email,
+#             password_reset.otp: otp
+#         })
 
-    db.commit()
+#     db.commit()
 
-    return{"message": "OTP has been sent to change password"}
+#     return{"message": "OTP has been sent to change password"}
 
-@router.put("/changePass", status_code=status.HTTP_200_OK)
-def userChangePassword(request: pass_reset, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
-    user = db.query(password_reset).filter(
-        password_reset.user_email_id == request.email)
+# @router.put("/changePass", status_code=status.HTTP_200_OK)
+# def userChangePassword(request: pass_reset, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
+#     user = db.query(password_reset).filter(
+#         password_reset.user_email_id == request.email)
 
-    if user.first().otp != request.otp:
-        raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE,
-                            detail="Incorrect OTP"
-                            )
+#     if user.first().otp != request.otp:
+#         raise HTTPException(status_code=status.HTTP_406_NOT_ACCEPTABLE,
+#                             detail="Incorrect OTP"
+#                             )
 
-    mess = "Your New Password is"
-    sendConfirmInfo(request.password, request.email, mess, background_tasks)
+#     mess = "Your New Password is"
+#     sendConfirmInfo(request.password, request.email, mess, background_tasks)
 
-    users = db.query(User).filter(
-        User.email == request.email)
+#     users = db.query(User).filter(
+#         User.email == request.email)
 
-    users.update({"password": Hasher.get_password_hash(request.password)})
-    db.commit()
+#     users.update({"password": Hasher.get_password_hash(request.password)})
+#     db.commit()
 
-    return {"message": "Password updated succesfully"}
+#     return {"message": "Password updated succesfully"}
 

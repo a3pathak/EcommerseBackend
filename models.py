@@ -1,8 +1,9 @@
 from email.policy import default
-from sqlalchemy import Column, Integer, String, BigInteger, Boolean, Float
+from sqlalchemy import Column, Integer, String, BigInteger, Boolean, Float, ForeignKey
 from sqlalchemy.ext.declarative import as_declarative, declared_attr
 from typing import Any
 from dataBase import Base as Basex
+from sqlalchemy.orm import relationship
 
 class Base(Basex):
     __abstract__ = True
@@ -18,6 +19,15 @@ class Admin(Base):
     password = Column(String(500), default = None)
     email = Column(String(500), unique=True, default = None)
     mobile = Column(BigInteger, unique=True, default = None)    
+
+class User(Base):
+    id = Column(Integer, index= True, primary_key = True)
+    userName = Column(String(500), default = None)
+    email = Column(String(500), default = None)
+    phoneNumber = Column(BigInteger, default = False)
+    password = Column(String(100), default=None)
+    products = relationship("Product", back_populates="owner")
+    orders = relationship("OrderDetails", back_populates="owner")
 
 class password_reset(Base):
     id = Column(Integer, index= True, primary_key = True)
@@ -35,8 +45,9 @@ class Product(Base):
     category = Column(String(500), default = None)    
     price = Column(Integer, default = None)    
     taxes = Column(Boolean, default = False)   
-    user_id = Column(Integer, default=None)
+    user_id = Column(Integer, ForeignKey("user.id"))
     branchID = Column(Integer, default=None)
+    owner = relationship("User", back_populates="products")
     
 class Branch(Base):
     id = Column(Integer, index= True, primary_key = True)
@@ -48,13 +59,6 @@ class Branch(Base):
     branchCountry = Column(Integer, default = None)    
     branchPincode = Column(Integer, default = None)
     user_id = Column(Integer, default=None)
-
-class User(Base):
-    id = Column(Integer, index= True, primary_key = True)
-    userName = Column(String(500), default = None)
-    email = Column(String(500), default = None)
-    phoneNumber = Column(BigInteger, default = False)
-    password = Column(String(30), default=None)
 
 class AddressDetail(Base):
     id = Column(Integer, index= True, primary_key = True)
@@ -92,5 +96,6 @@ class OrderDetails(Base):
     payment_stat = Column(Boolean, default=False)
     productName = Column(String(100), default=None)
     amount = Column(Float, default=0.0)
-    user_id = Column(Integer, default=None)
+    user_id = Column(Integer, ForeignKey("user.id"))
     branchID = Column(Integer, default=None)
+    owner = relationship("User", back_populates="orders")

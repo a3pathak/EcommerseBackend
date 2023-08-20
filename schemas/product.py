@@ -5,7 +5,7 @@ class detail_product(BaseModel):
     description: str = None
     inStock: bool = None
     productCode: str = None
-    gender: str = None
+    # gender: str = None
     category: str = None
     price: int = None
-    taxes: bool = None
+    # taxes: bool = None
